@@ -1,30 +1,49 @@
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ArrayList;
 
-public class Main{
+public class Main {
+
+
     public static void main(String[] args) {
-        
+
         // Example usage
         String fileName = "File.csv";
-        
-        KMeanCluster cluster = new KMeanCluster(fileName,3);
 
+        KMeanCluster cluster = new KMeanCluster(fileName, 2);
+
+        // Custom Center Points
+        List<List<Float>> centerPoints = new ArrayList<>();
+        centerPoints.add(Arrays.asList(185f,72f));
+        centerPoints.add(Arrays.asList(170f,56f));
+
+        // Display the Table
         cluster.tableDisplay();
 
-        List<List<Float>> centerPoints = new ArrayList<>();
-        centerPoints.add(Arrays.asList(16.0f, 17.0f, 18.0f));
-        centerPoints.add(Arrays.asList(13.0f, 14.0f, 15.0f));
-        centerPoints.add(Arrays.asList(4.0f, 5.0f, 6.0f));
+        // Setup Some Random Points
+        cluster.tableDisplay(cluster.setupCenterPoints(centerPoints), "Custom Center Points", "Point");
 
-        cluster.setupCenterPoints(centerPoints);
-        cluster.setupRandomCenterPoints();
+        int i = 1;
+        do {
 
-        cluster.performDistanceCalculation();
+            System.out.println("***** STEP " + i + " *****");
+            // Here create the Distance Table
+            cluster.tableDisplay(cluster.performDistanceCalculation(), "Distance Table", "Point");
 
-        System.out.print(cluster.findPointsDistribution());
+            // Display the Table Distribution
+            cluster.tableDisplayInteger(cluster.findPointsDistribution(), "Points in Cluster", "Cluster");
 
-        cluster.findNewCenterPoints();
+            // Get New Center Points
+            cluster.tableDisplay(cluster.findNewCenterPoints(), "New Center Points", "Point");
+
+            i++;
+
+        } while (cluster.swapPoints());
+
+        // Display the Table Distribution
+        System.out.println("***** RESULT *****");
+        System.out.println("K Mean Clustering");
+        cluster.tableDisplayInteger(cluster.findPointsDistribution(), "Points in Cluster", "Cluster");
 
     }
 }

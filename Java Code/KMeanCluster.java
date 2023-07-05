@@ -18,6 +18,9 @@ public class KMeanCluster {
     // This is used to store the Distribution of Points in each clusters
     List<List<Integer>> clustersPoints = new ArrayList<>();
 
+    // This are Newly Created Center Points
+    List<List<Float>> newPoints = new ArrayList<>();
+
     /**
      * Constructor will read the data from csv and setup all the variables
      * 
@@ -39,8 +42,6 @@ public class KMeanCluster {
         // Setup the Cluster Center Points
         clusterCenterPoints = new ArrayList<List<Float>>();
 
-        // Distance table is used to Find the distance Between Center Point and All the
-        // other Points
 
     }
 
@@ -56,6 +57,42 @@ public class KMeanCluster {
             }
             System.out.println();
         }
+        System.out.println();
+    }
+
+
+    /**
+     * This function will display the content of variable given
+     */
+    public void tableDisplay(List<List<Float>> table, String message, String Type) {
+        System.out.println(message);
+        int i = 0;
+        for (List<Float> row : table) {
+            System.out.print(Type + " " + i + "\t\t");
+            for (Float element : row) {
+                System.out.print(Math.floor(element) + "\t");
+            }
+            System.out.println();
+            i++;
+        }
+        System.out.println();
+    }
+
+    /**
+     * This function will display the content of variable given
+     */
+    public void tableDisplayInteger(List<List<Integer>> table, String message, String Type) {
+        System.out.println(message);
+        int i = 0;
+        for (List<Integer> row : table) {
+            System.out.print(Type + " " + i + "\t");
+            for (Integer element : row) {
+                System.out.print(element + "\t");
+            }
+            System.out.println();
+            i++;
+        }
+        System.out.println();
     }
 
     /**
@@ -63,26 +100,27 @@ public class KMeanCluster {
      * 
      * @param centerPoints Pass the List of center points
      */
-    public void setupCenterPoints(List<List<Float>> centerPoints) {
+    public List<List<Float>> setupCenterPoints(List<List<Float>> centerPoints) {
 
         // If Center Points match the number of clusters
         if (centerPoints.size() == totalClusters) {
             clusterCenterPoints.clear();
             clusterCenterPoints = centerPoints;
-
-            // Display the cluster points
-            System.out.println("The cluster center points are given as:");
-            System.out.println(clusterCenterPoints);
+ 
         } else {
             System.out.println("The center points should have index up to the total number of clusters");
         }
+
+        return clusterCenterPoints;
     }
 
     /**
      * This function will find the random points from the dataset and assign points
      * to each clusters.
+     * 
+     * @return Random center points for the table
      */
-    public void setupRandomCenterPoints() {
+    public List<List<Float>> setupRandomCenterPoints() {
 
         List<Integer> randomPoints = new ArrayList<Integer>();
 
@@ -113,9 +151,6 @@ public class KMeanCluster {
 
         }
 
-        // Print All the Random Points Generated
-        System.out.println("The Cluster Random Center Points Are: ");
-
         // Set the New Cluster Center Points
         clusterCenterPoints.clear();
         for (Integer x : randomPoints) {
@@ -123,7 +158,7 @@ public class KMeanCluster {
             clusterCenterPoints.add(point);
         }
 
-        System.out.println(clusterCenterPoints);
+        return clusterCenterPoints;
     }
 
     /**
@@ -165,6 +200,9 @@ public class KMeanCluster {
      */
     public List<List<Float>> performDistanceCalculation() {
 
+        // Clear Our Previous Distance Table
+        distanceTable.clear();
+
         // Find the Distance of Each Point from the Center Points
         for (List<Float> dataPoint : data) {
 
@@ -195,6 +233,9 @@ public class KMeanCluster {
      * @return Distribution of Points in each cluster
      */
     public List<List<Integer>> findPointsDistribution() {
+
+        // Clear Our Previous Cluster Points
+        clustersPoints.clear();
 
         // Find the Points in Each Cluster
         for (int j = 0; j < clusterCenterPoints.size(); j++) {
@@ -233,7 +274,6 @@ public class KMeanCluster {
 
         }
 
-        System.out.println("Points Distribution are calculated!");
         return clustersPoints;
     }
 
@@ -246,14 +286,16 @@ public class KMeanCluster {
      * 
      */
     public List<List<Float>> findNewCenterPoints() {
+        
 
-        // Find the Total Sum and Take the Average
-        List<List<Float>> newPoints = new ArrayList<>();
+        // Now We Clear out Previous new Points
+        newPoints.clear();
 
+        // Find the New Center Points For Each Cluster
         for (int i = 0; i < clustersPoints.size(); i++) {
 
             // Find the Point in that Cluster
-            List<Integer> list = clustersPoints.get(i);
+            List<Integer> list = new ArrayList<>(clustersPoints.get(i));
 
             // Set the Initial Point Data
             newPoints.add(data.get(list.get(0)));
@@ -270,12 +312,33 @@ public class KMeanCluster {
                 }
             }
 
+            
+
             // Now We Find the Average by Total
             for (int j = 0; j < newPoints.get(i).size(); j++) {
                 newPoints.get(i).set(j, newPoints.get(i).get(j) / clustersPoints.get(i).size());
             }
         }
+        
 
         return newPoints;
+    }
+
+
+    public boolean swapPoints(){
+
+
+        // Find if the New Points and Old Points Are Same or Not
+        for (int i = 0; i < clusterCenterPoints.size(); i++) {
+            for (int j = 0; j < clusterCenterPoints.get(i).size(); j++) {
+                if(clusterCenterPoints.get(i).get(j) != newPoints.get(i).get(j)){
+                    clusterCenterPoints = newPoints;
+                    return true;
+                }
+            }
+        }
+
+    
+        return false;
     }
 }
