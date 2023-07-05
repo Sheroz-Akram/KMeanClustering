@@ -20,5 +20,11 @@ public class Main{
         cluster.setupCenterPoints(centerPoints);
         cluster.setupRandomCenterPoints();
 
+        cluster.performDistanceCalculation();
+
+        System.out.print(cluster.findPointsDistribution());
+
+        cluster.findNewCenterPoints();
+
     }
 }
